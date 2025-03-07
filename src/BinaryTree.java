@@ -1,35 +1,15 @@
 public class BinaryTree
 {
     public TNode root;
-///////////////////////---------Basic Methods---------///////////////////////
+    ///////////////////////---------Basic Methods---------///////////////////////
     public void Add(int data)
     {
         root = addRecursive(root, data);
     }
 
-    private TNode addRecursive(TNode current, int data)
-    {
-        if (current == null)
-        {
-            return new TNode(data);
-        }
-        if (data < current.data)
-        {
-            current.left = addRecursive(current.left, data);
-        }
-        else if (data > current.data)
-        {
-            current.right = addRecursive(current.right, data);
-        }
-        else
-        {
-            return current; //data already on the tree
-        }
 
-        return current;
-    }
 
-    public void Find(int data)
+    public boolean Find(int data)
     {
         TNode currentNode = root;
 
@@ -37,8 +17,7 @@ public class BinaryTree
         {
             if(currentNode.data == data)
             {
-                System.out.println("Element " + data + " found in the tree.");
-                return;
+                return true;
             }
             else if(data < currentNode.data)
             {
@@ -49,9 +28,7 @@ public class BinaryTree
                 currentNode = currentNode.right;
             }
         }
-
-        System.out.println("Element " + data + " not found in the tree.");
-        return;
+        return false;
     }
 
     public void Delete(int target)
@@ -142,7 +119,7 @@ public class BinaryTree
         }
     }
 
-///////////////////////---------Traversal Methods---------///////////////////////
+    ///////////////////////---------Traversal Methods---------///////////////////////
     public void InOrderTraversal(TNode tree)
     {
         if(tree != null){
@@ -172,57 +149,135 @@ public class BinaryTree
     }
 
 
-///////////////////////---------Getter Methods---------///////////////////////
-    public int GetHeight(TNode tree)
+    ///////////////////////---------Getter Methods---------///////////////////////
+    public int GetHeight()
     {
-        if (root == null)
+        return GetHeightRecursive(root);
+    }
+
+    public int CountNodes()
+    {
+        return CountNodesRecursive(root);
+    }
+
+    public int GetSum()
+    {
+        return GetSumRecursive(root);
+    }
+
+    public int FindLargest()
+    {
+        return FindLargestRecursive(root);
+    }
+
+    public boolean IsAncestor(int ancestor, int descendant)
+    {
+        return IsAncestorRecursive(ancestor, descendant, root);
+    }
+
+    ////////////////////////-----------Private Helpers-----------////////////////////////
+    private TNode addRecursive(TNode current, int data)
+    {
+        if (current == null)
+        {
+            return new TNode(data);
+        }
+        if (data < current.data)
+        {
+            current.left = addRecursive(current.left, data);
+        }
+        else if (data > current.data)
+        {
+            current.right = addRecursive(current.right, data);
+        }
+        else
+        {
+            return current; //data already on the tree
+        }
+
+        return current;
+    }
+
+    private int GetHeightRecursive(TNode tree)
+    {
+        if (tree == null)
         {
             return -1;
         }
 
-        int leftHeight = GetHeight(root.left);
-        int rightHeight = GetHeight(root.right);
+        int leftHeight = GetHeightRecursive(tree.left);
+        int rightHeight = GetHeightRecursive(tree.right);
         return 1 + Math.max(leftHeight, rightHeight);
     }
 
-    public int CountNodes(TNode tree)
+    public int CountNodesRecursive(TNode tree)
     {
         if (tree == null)
         {
             return 0;
         }
 
-        int l = CountNodes(tree.left);
-        int r = CountNodes(tree.right);
+        int l = CountNodesRecursive(tree.left);
+        int r = CountNodesRecursive(tree.right);
 
         return 1 + l + r;
     }
 
-    public int GetSum(TNode tree)
+    public int GetSumRecursive(TNode tree)
     {
         if (tree == null)
         {
             return 0;
         }
 
-        int leftSum = GetSum(tree.left);
-        int rightSum = GetSum(tree.right);
+        int leftSum = GetSumRecursive(tree.left);
+        int rightSum = GetSumRecursive(tree.right);
 
         return tree.data + leftSum + rightSum;
     }
 
-    public int FindLargest(TNode tree)
+    public int FindLargestRecursive(TNode tree)
     {
         if (tree.right == null)
         {
             return tree.data;
         }
 
-        return FindLargest(tree.right);
+        return FindLargestRecursive(tree.right);
     }
 
-    public boolean IsAncestor(int ancestor, int descendant)
+    private boolean IsAncestorRecursive(int ancestor, int descendant, TNode tree)
     {
-        return false;
+        if(tree == null)
+        {
+            return false;
+        }
+
+        if(tree.data == ancestor)
+        {
+            return containsInSub(tree, descendant);
+        }
+
+        if(ancestor < tree.data)
+        {
+            return IsAncestorRecursive(ancestor, descendant, tree.left);
+        }
+        else
+        {
+            return IsAncestorRecursive(ancestor, descendant, tree.right);
+        }
+    }
+
+    private boolean containsInSub(TNode subTree, int descendant)
+    {
+        if(subTree == null)
+        {
+            return false;
+        }
+        if(subTree.data == descendant)
+        {
+            return true;
+        }
+        return containsInSub(subTree.left,descendant) || containsInSub(subTree.right,descendant);
     }
 }
